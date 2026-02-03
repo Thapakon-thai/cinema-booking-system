@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ระบบจองตั๋วหนัง (Cinema Seat Booking System)
 
-## Getting Started
+เว็บแอปพลิเคชันสำหรับจองตั๋วหนังออนไลน์ พัฒนาโดยใช้ Next.js และ Tailwind CSS
 
-First, run the development server:
+## 📋 ภาพรวมโปรเจกต์ (Project Overview)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+ระบบนี้ช่วยให้ผู้ใช้สามารถเลือกดูรายการภาพยนตร์ ตรวจสอบรอบฉาย และทำการจองที่นั่งได้แบบ Real-time โดยมีการคำนวณราคาอัตโนมติตามจำนวนที่นั่งที่เลือก
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### ฟีเจอร์หลัก (Key Features)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1.  **หน้าแรก (Home Page)**
+    - แสดงรายการภาพยนตร์ที่กำลังเข้าฉาย (Now Showing)
+    - แสดงโปสเตอร์ ชื่อเรื่อง และราคาตั๋ว
+    - เอฟเฟกต์การ์ดแบบ Glassmorphism และ Animation ที่สวยงาม
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2.  **หน้าจองที่นั่ง (Booking Page)**
+    - แผนผังที่นั่งในโรงภาพยนตร์ (Seat Grid)
+    - แสดงสถานะที่นั่ง:
+      - ⚪ **ว่าง (Available)**: สามารถเลือกได้
+      - 🔵 **ที่เลือก (Selected)**: กำลังจะจอง
+      - ⚫ **ไม่ว่าง (Occupied)**: มีคนจองแล้ว (คลิกไม่ได้)
+    - คำนวณราคารวมให้อัตโนมัติตามจำนวนที่นั่งที่เลือก
 
-## Learn More
+3.  **ระบบการจอง (Booking System)**
+    - บันทึกข้อมูลการจองลงฐานข้อมูล
+    - ป้องกันการจองซ้ำ (Concurrency control using Database constraints)
+    - แสดงข้อความยืนยันเมื่อจองสำเร็จ
 
-To learn more about Next.js, take a look at the following resources:
+## 🛠️ เทคโนโลยีที่ใช้ (Tech Stack)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Frontend Framework**: Next.js 16 (App Router)
+- **Database**: SQLite
+- **ORM**: Prisma
+- **Styling**: Tailwind CSS v4
+- **Language**: TypeScript
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🚀 วิธีการติดตั้งและรันโปรเจกต์ (Installation & Setup)
 
-## Deploy on Vercel
+1.  **Clone โปรเจกต์**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+    ```bash
+    git clone <repository-url>
+    cd cinemabooking
+    ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+2.  **ติดตั้ง Dependencies**
+
+    ```bash
+    pnpm install
+    # หรือ npm install
+    ```
+
+3.  **เตรียมฐานข้อมูล (Database Setup)**
+    สร้างตารางและลงข้อมูลจำลอง (Seed data):
+
+    ```bash
+    npx prisma migrate dev --name init
+    node prisma/seed.js
+    ```
+
+4.  **รันโปรแกรม (Run Server)**
+
+    ```bash
+    pnpm dev
+    # หรือ npm run dev
+    ```
+
+5.  **เปิดใช้งาน**
+    เปิด Browser แล้วไปที่ `http://localhost:3000`
+
+## 📖 คู่มือการใช้งาน (User Manual)
+
+1.  **เลือกภาพยนตร์**: ที่หน้าแรก คลิกที่การ์ดภาพยนตร์ที่ต้องการดู หรือกดปุ่ม "Book Seats"
+2.  **เลือกที่นั่ง**: คลิกที่นั่งที่ต้องการ (สีขาว) ที่นั่งจะเปลี่ยนเป็นสีฟ้า และราคารวมจะอัปเดตที่ด้านล่าง
+3.  **ยืนยันการจอง**: กดปุ่ม "Confirm Booking"
+4.  **เสร็จสิ้น**: ระบบจะพาจกลับไปหน้าแรกพร้อมข้อความ "Booking confirmed!" และเมื่อเข้าไปดูรอบฉายเดิมอีกครั้ง ที่นั่งนั้นจะกลายเป็นสีเทา (ไม่ว่าง)
