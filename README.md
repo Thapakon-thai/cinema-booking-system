@@ -11,7 +11,6 @@
 1.  **หน้าแรก (Home Page)**
     - แสดงรายการภาพยนตร์ที่กำลังเข้าฉาย (Now Showing)
     - แสดงโปสเตอร์ ชื่อเรื่อง และราคาตั๋ว
-    - เอฟเฟกต์การ์ดแบบ Glassmorphism และ Animation ที่สวยงาม
 
 2.  **หน้าจองที่นั่ง (Booking Page)**
     - แผนผังที่นั่งในโรงภาพยนตร์ (Seat Grid)
@@ -52,6 +51,14 @@
 
 3.  **เตรียมฐานข้อมูล (Database Setup)**
     สร้างตารางและลงข้อมูลจำลอง (Seed data):
+    ต้องสร้างไฟล์ .env ก่อน
+    ```bash
+    cp .env.example .env
+    ```
+    แล้วแก้ .env ให้ถูกต้อง
+    ```bash
+    DATABASE_URL="file:./dev.db"
+    ```
 
     ```bash
     npx prisma migrate dev --name init
