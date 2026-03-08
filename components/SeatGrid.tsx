@@ -25,6 +25,7 @@ export function SeatGrid({
 }: SeatGridProps) {
   const [selectedSeats, setSelectedSeats] = useState<string[]>([])
   const [isBooking, setIsBooking] = useState(false)
+  const [error, setError] = useState<string | null>(null);
   
   const toggleSeat = (seatId: string) => {
     if (bookedSeats.includes(seatId)) return
@@ -39,11 +40,23 @@ export function SeatGrid({
   const handleBooking = async () => {
     if (selectedSeats.length === 0) return
     setIsBooking(true)
+    setError(null);
     try {
       await bookSeats(movieId, selectedSeats)
     } catch (error) {
-      console.error(error)
-      setIsBooking(false)
+      if (
+        error &&
+        typeof error === "object" &&
+        "digest" in error &&
+        typeof (error as any).digest === "string" &&
+        (error as any).digest.startsWith("NEXT_REDIRECT")
+      ) {
+        throw error; // re-throw so Next.js handles the redirect
+      }
+      const message = error instanceof Error ? error.message : "Booking failed";
+      setError(message);
+    } finally {
+      setIsBooking(false);
     }
   }
 
@@ -56,6 +69,7 @@ export function SeatGrid({
         const id = `${rowLabels[r]}${c}`
         const isBooked = bookedSeats.includes(id)
         const isSelected = selectedSeats.includes(id)
+        
 
         seats.push(
           <button
@@ -108,35 +122,46 @@ export function SeatGrid({
         </div>
       </div>
 
+      {/* Error */}
+      {error && (
+        <div className="w-full bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-xl text-center mb-4">
+          {error}
+        </div>
+      )}
+
       {/* Summary */}
       <div className="w-full bg-slate-900/50 p-6 rounded-xl border border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
         <div>
-           <h3 className="text-xl font-bold text-white mb-1">{movieTitle}</h3>
-           <p className="text-slate-400">
-             {selectedSeats.length} seat(s) selected: <span className="text-blue-400">{selectedSeats.join(', ')}</span>
-           </p>
+          <h3 className="text-xl font-bold text-white mb-1">{movieTitle}</h3>
+          <p className="text-slate-400">
+            {selectedSeats.length} seat(s) selected:{" "}
+            <span className="text-blue-400">{selectedSeats.join(", ")}</span>
+          </p>
         </div>
-        
+
         <div className="flex items-center gap-6">
-           <div className="text-right">
-             <p className="text-sm text-slate-400">Total Price</p>
-             <p className="text-2xl font-bold text-white">${totalPrice.toFixed(2)}</p>
-           </div>
-           
-           <button
-             onClick={handleBooking}
-             disabled={selectedSeats.length === 0 || isBooking}
-             className={cn(
-               "glass-btn px-8 py-3 font-bold flex items-center gap-2 text-white",
-               selectedSeats.length > 0 
-                  ? "bg-blue-600 hover:bg-blue-500 border-blue-500 text-white shadow-lg shadow-blue-500/20" 
-                  : "opacity-50 cursor-not-allowed"
-             )}
-           >
-             {isBooking ? 'Booking...' : 'Confirm Booking'} <Ticket className="w-5 h-5" />
-           </button>
+          <div className="text-right">
+            <p className="text-sm text-slate-400">Total Price</p>
+            <p className="text-2xl font-bold text-white">
+              ${totalPrice.toFixed(2)}
+            </p>
+          </div>
+
+          <button
+            onClick={handleBooking}
+            disabled={selectedSeats.length === 0 || isBooking}
+            className={cn(
+              "glass-btn px-8 py-3 font-bold flex items-center gap-2 text-white",
+              selectedSeats.length > 0
+                ? "bg-blue-600 hover:bg-blue-500 border-blue-500 text-white shadow-lg shadow-blue-500/20"
+                : "opacity-50 cursor-not-allowed",
+            )}
+          >
+            {isBooking ? "Booking..." : "Confirm Booking"}{" "}
+            <Ticket className="w-5 h-5" />
+          </button>
         </div>
       </div>
     </div>
-  )
+  );
 }
