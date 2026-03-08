@@ -32,12 +32,12 @@ export function MovieCard({ movie }: MovieCardProps) {
           <div className="flex items-center gap-4 text-slate-300 text-sm translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75">
             <div className="flex items-center gap-1">
               <Calendar className="w-4 h-4 text-indigo-400" />
-              <span>{movie.showTime.toLocaleDateString()}</span>
+              <span>{new Date(movie.showTime).toLocaleDateString()}</span>
             </div>
             <div className="flex items-center gap-1">
               <Clock className="w-4 h-4 text-pink-400" />
               <span>
-                {movie.showTime.toLocaleTimeString([], {
+                {new Date(movie.showTime).toLocaleTimeString([], {
                   hour: "2-digit",
                   minute: "2-digit",
                 })}
