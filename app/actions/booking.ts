@@ -4,7 +4,7 @@ import { PrismaClient } from '@prisma/client'
 import { unstable_cache, revalidateTag } from 'next/cache'
 import { redirect } from 'next/navigation'
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient({ log: ['query'] })
 
 const getCachedMovies = unstable_cache(
   async () => {
