@@ -9,7 +9,6 @@ export default async function Home({
 }: {
   searchParams: Promise<{ success?: string }>
 }) {
-  await new Promise((resolve) => setTimeout(resolve, 2000));
   const movies = await getMovies()
   const { success } = await searchParams
   const isSuccess = success === 'true'

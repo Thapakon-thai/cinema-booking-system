@@ -1,5 +1,12 @@
 import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
+
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist-sans",
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -12,13 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Geist+Sans:wght@400;700"
-          rel="stylesheet"
-        />
-      </head>
+    <html lang="en" className={geist.variable}>
       <body className="antialiased">{children}</body>
     </html>
   );
