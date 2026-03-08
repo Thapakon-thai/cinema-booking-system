@@ -1,7 +1,6 @@
 import { getMovie } from '@/app/actions/booking'
 import { SeatGrid } from '@/components/SeatGrid'
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 
 export const revalidate = 0
@@ -11,6 +10,7 @@ export default async function BookingPage({
 }: {
   params: Promise<{ id: string }>
 }) {
+  await new Promise((resolve) => setTimeout(resolve, 2000));
   const { id } = await params
   const modalId = parseInt(id)
   if (isNaN(modalId)) notFound()
@@ -26,12 +26,12 @@ export default async function BookingPage({
        <div className="fixed inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-900/20 via-slate-900 to-slate-900 -z-10" />
        
        <div className="max-w-6xl mx-auto">
-         <Link 
+         <a 
            href="/" 
            className="inline-flex items-center text-slate-400 hover:text-white mb-8 transition-colors group"
          >
            <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" /> Back to Movies
-         </Link>
+         </a>
 
          <SeatGrid 
            bookedSeats={bookedSeats} 

@@ -1,5 +1,3 @@
-import Link from "next/link";
-import Image from "next/image";
 import { Calendar, Clock, Ticket } from "lucide-react";
 import { Movie } from "@prisma/client";
 import { cn } from "@/lib/utils";
@@ -10,17 +8,15 @@ interface MovieCardProps {
 
 export function MovieCard({ movie }: MovieCardProps) {
   return (
-    <Link
+    <a
       href={`/movie/${movie.id}`}
       className="group block glass-panel overflow-hidden hover:scale-[1.02] transition-transform duration-300"
     >
       <div className="relative h-96 w-full">
-        <Image
+        <img
           src={movie.image}
           alt={movie.title}
-          fill
-          priority
-          className="object-cover transition-transform duration-700 group-hover:scale-110"
+          className="object-cover transition-transform duration-700 group-hover:scale-110 w-full h-full"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent" />
 
@@ -53,6 +49,6 @@ export function MovieCard({ movie }: MovieCardProps) {
           </div>
         </div>
       </div>
-    </Link>
+    </a>
   );
 }
