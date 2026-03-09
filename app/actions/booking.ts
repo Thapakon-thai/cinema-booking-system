@@ -17,6 +17,7 @@ export async function getMovies() {
   // 1. วัดผลการ Query แบบมี Sorting (ถ้าทำ Index ที่ showTime จะเร็วขึ้นมาก)
   console.time("⏱️ getMovies_Duration");
   const movies = await prisma.movie.findMany({
+    take: 20, // <--- ดึงมาแค่ 20 อันพอ
     orderBy: {
       showTime: "asc",
     },
