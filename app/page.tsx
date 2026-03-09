@@ -7,11 +7,21 @@ export const revalidate = 0; // Disable cache for demo purposes to see updates i
 export default async function Home({
   searchParams,
 }: {
-  searchParams: Promise<{ success?: string }>;
+  searchParams: Promise<{
+    success?: string;
+    raceCondition?: string;
+    seats?: string;
+    ticketId?: string;
+  }>;
 }) {
   const movies = await getMovies();
-  const { success } = await searchParams;
-  const isSuccess = success === "true";
+  const resolvedSearchParams = await searchParams;
+  const isSuccess = resolvedSearchParams.success === "true";
+  const isRaceCondition = resolvedSearchParams.raceCondition === "true";
+  const bookedSeats = resolvedSearchParams.seats
+    ? decodeURIComponent(resolvedSearchParams.seats)
+    : "";
+  const ticketId = resolvedSearchParams.ticketId || "Unknown";
 
   return (
     <main className="min-h-screen p-8 md:p-12 relative overflow-hidden">
@@ -41,9 +51,26 @@ export default async function Home({
           </p>
         </header>
 
-        {isSuccess && (
+        {isSuccess && !isRaceCondition && (
           <div className="bg-green-500/10 border border-green-500/20 text-green-400 px-6 py-4 rounded-xl text-center backdrop-blur-md animate-in fade-in slide-in-from-top-4">
-            Booking confirmed! Enjoy your movie.
+            Booking confirmed! You have successfully booked seats:{" "}
+            <span className="font-bold text-white">{bookedSeats}</span> (Ticket
+            ID: {ticketId}). Enjoy your movie!
+          </div>
+        )}
+
+        {isSuccess && isRaceCondition && (
+          <div className="bg-red-500/20 border-2 border-red-500 text-red-200 px-6 py-6 rounded-xl text-center backdrop-blur-md animate-in fade-in slide-in-from-top-4 shadow-[0_0_30px_rgba(239,68,68,0.4)]">
+            <h3 className="text-2xl font-bold text-red-500 mb-2">
+              🚨 RACE CONDITION DETECTED! 🚨
+            </h3>
+            <p className="text-lg">
+              You booked seats{" "}
+              <span className="font-bold text-white bg-red-900/50 px-2 py-1 rounded">
+                {bookedSeats}
+              </span>{" "}
+              (Ticket ID: {ticketId}).
+            </p>
           </div>
         )}
 
