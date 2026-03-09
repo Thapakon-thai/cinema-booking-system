@@ -9,7 +9,7 @@ async function main() {
   await prisma.booking.deleteMany({});
   await prisma.movie.deleteMany({});
 
-  const dummyMovies = Array.from({ length: 200 }).map((_, i) => ({
+  const dummyMovies = Array.from({ length: 400000 }).map((_, i) => ({
     title: `Movie Title ${i}`,
     price: Math.random() * 20 + 10,
     image: `https://picsum.photos/seed/${i}/200/300`,
