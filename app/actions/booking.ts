@@ -26,10 +26,10 @@ export async function getMovie(id: number) {
 }
 
 export async function bookSeats(movieId: number, seats: string[]) {
-  if (seats.length === 0) throw new Error('No seats selected')
+  if (seats.length === 0) return { error: 'No seats selected' }
 
   try {
-    await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx) => {
       const existingBooking = await tx.booking.findMany({
         where: { movieId },
       })
@@ -38,7 +38,7 @@ export async function bookSeats(movieId: number, seats: string[]) {
       const conflicting = seats.filter((seat) => bookedSeats.includes(seat))
       
       if (conflicting.length > 0) {
-        throw new Error(`ขออภัย ที่นั่ง ${conflicting.join(', ')} ถูกจองไปแล้ว กรุณาเลือกใหม่`)
+        return { error: `ขออภัย ที่นั่ง ${conflicting.join(', ')} ถูกจองไปแล้ว กรุณาเลือกใหม่` }
       }
 
       await tx.booking.create({
@@ -47,13 +47,17 @@ export async function bookSeats(movieId: number, seats: string[]) {
           seats: seats.join(','),
         },
       })
+      return { success: true }
     })
+
+    if (result && result.error) {
+      return result
+    }
   } catch (error: any) {
     if (error.code === 'P2024' || error.message.includes('database is locked')) {
-      throw new Error('ระบบกำลังยุ่งเนื่องจากมีผู้ใช้งานพร้อมกันจำนวนมาก กรุณาลองกดจองใหม่อีกครั้ง')
+      return { error: 'ระบบกำลังยุ่งเนื่องจากมีผู้ใช้งานพร้อมกันจำนวนมาก กรุณาลองกดจองใหม่อีกครั้ง' }
     }
-    
-    throw error; 
+    return { error: 'An unexpected error occurred' }; 
   }
 
   revalidatePath(`/movie/${movieId}`)
