@@ -4,7 +4,14 @@ import { PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  log: [
+    { emit: "stdout", level: "query" }, // ให้แสดง Query SQL ออกมา
+    { emit: "stdout", level: "info" },
+    { emit: "stdout", level: "warn" },
+    { emit: "stdout", level: "error" },
+  ],
+});
 
 export async function getMovies() {
   // 1. วัดผลการ Query แบบมี Sorting (ถ้าทำ Index ที่ showTime จะเร็วขึ้นมาก)
