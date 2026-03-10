@@ -6,6 +6,8 @@ import { Calendar, Clock, Ticket } from "lucide-react";
 import { Movie } from "@prisma/client";
 import { useState } from "react";
 
+
+
 interface MovieCardProps {
   movie: Movie;
 }
@@ -24,13 +26,13 @@ export function MovieCard({ movie }: MovieCardProps) {
         <Image
           src={imgSrc}
           alt={movie.title}
-          fill
-          priority
-          className="object-cover transition-transform duration-700 group-hover:scale-110"
           // แก้ปัญหา 404: ถ้าโหลดรูปหลักไม่ได้ ให้เปลี่ยนไปใช้รูปสำรองจาก picsum
           onError={() => {
             setImgSrc(`https://picsum.photos/seed/${movie.id}/400/600`);
           }}
+          width={400}
+          height={600}
+          className="object-cover transition-transform duration-700 group-hover:scale-110 w-full h-full"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent" />
 

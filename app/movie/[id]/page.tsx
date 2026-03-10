@@ -1,8 +1,8 @@
 import { getMovie } from '@/app/actions/booking'
 import { SeatGrid } from '@/components/SeatGrid'
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
+import Link from 'next/link'
 
 export const revalidate = 0
 
@@ -26,7 +26,7 @@ export default async function BookingPage({
        <div className="fixed inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-900/20 via-slate-900 to-slate-900 -z-10" />
        
        <div className="max-w-6xl mx-auto">
-         <Link 
+         <Link
            href="/" 
            className="inline-flex items-center text-slate-400 hover:text-white mb-8 transition-colors group"
          >
