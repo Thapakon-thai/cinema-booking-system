@@ -52,16 +52,13 @@ export async function getMovie(id: number) {
 }
 
 export async function bookSeats(movieId: number, seats: string[]) {
-
   if (seats.length === 0) return { error: 'No seats selected' }
+
+  await new Promise(resolve => setTimeout(resolve, 3000));
   
   try {
     let ticketId: number;
     const result = await prisma.$transaction(async (tx) => {
-      
-      // วัดผลการ INSERT (Indexing จะทำให้ตรงนี้ช้าลง "เล็กน้อย" เพราะต้องเขียน Index เพิ่ม)
-      console.time("⏱️ bookSeats_Insert_Duration");
-      await new Promise(resolve => setTimeout(resolve, 3000));
       
       const existingBooking = await tx.booking.findMany({
         where: { movieId },
@@ -80,7 +77,6 @@ export async function bookSeats(movieId: number, seats: string[]) {
           seats: seats.join(','),
         },
       })
-      console.timeEnd("⏱️ bookSeats_Insert_Duration");
       
       ticketId = newBooking.id;
       return { success: true }
