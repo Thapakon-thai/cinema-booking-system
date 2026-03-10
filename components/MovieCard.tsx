@@ -1,14 +1,20 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { Calendar, Clock, Ticket } from "lucide-react";
 import { Movie } from "@prisma/client";
-import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 interface MovieCardProps {
   movie: Movie;
 }
 
+// ใช้ Named Export เหมือนเดิมเพื่อให้เข้ากับโค้ดส่วนอื่นของคุณ
 export function MovieCard({ movie }: MovieCardProps) {
+  // สร้าง State เพื่อจัดการรูปภาพที่อาจจะ 404
+  const [imgSrc, setImgSrc] = useState(movie.image);
+
   return (
     <Link
       href={`/movie/${movie.id}`}
@@ -16,11 +22,15 @@ export function MovieCard({ movie }: MovieCardProps) {
     >
       <div className="relative h-96 w-full">
         <Image
-          src={movie.image}
+          src={imgSrc}
           alt={movie.title}
           fill
           priority
           className="object-cover transition-transform duration-700 group-hover:scale-110"
+          // แก้ปัญหา 404: ถ้าโหลดรูปหลักไม่ได้ ให้เปลี่ยนไปใช้รูปสำรองจาก picsum
+          onError={() => {
+            setImgSrc(`https://picsum.photos/seed/${movie.id}/400/600`);
+          }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent" />
 
@@ -32,12 +42,12 @@ export function MovieCard({ movie }: MovieCardProps) {
           <div className="flex items-center gap-4 text-slate-300 text-sm translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75">
             <div className="flex items-center gap-1">
               <Calendar className="w-4 h-4 text-indigo-400" />
-              <span>{movie.showTime.toLocaleDateString()}</span>
+              <span>{new Date(movie.showTime).toLocaleDateString()}</span>
             </div>
             <div className="flex items-center gap-1">
               <Clock className="w-4 h-4 text-pink-400" />
               <span>
-                {movie.showTime.toLocaleTimeString([], {
+                {new Date(movie.showTime).toLocaleTimeString([], {
                   hour: "2-digit",
                   minute: "2-digit",
                 })}
