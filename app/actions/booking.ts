@@ -27,12 +27,13 @@ export async function getMovie(id: number) {
 
 export async function bookSeats(movieId: number, seats: string[]) {
   if (seats.length === 0) return { error: 'No seats selected' }
+  
+  await new Promise(resolve => setTimeout(resolve, 3000));
 
   try {
     let ticketId: number;
     const result = await prisma.$transaction(async (tx) => {
 
-      await new Promise(resolve => setTimeout(resolve, 3000));
 
       const existingBooking = await tx.booking.findMany({
         where: { movieId },
