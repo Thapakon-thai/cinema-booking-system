@@ -12,7 +12,7 @@ const getCachedMovies = unstable_cache(
     })
   },
   ['movies-api'],
-  { tags: ['movies'], revalidate: 60 }
+  { tags: ['movies-api'], revalidate: 60 }
 )
 
 export async function GET() {
