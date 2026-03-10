@@ -86,7 +86,7 @@ export async function bookSeats(movieId: number, seats: string[]) {
       return result
     }
     
-    revalidateTag(`/movie/${movieId}`, { expire: 0 })
+    revalidateTag(`movie-${movieId}`, {expire: 0})
     redirect(`/?success=true&seats=${encodeURIComponent(seats.join(', '))}&ticketId=${ticketId!}`)
   } catch (error: any) {
     if (error && typeof error === "object" && "digest" in error && typeof error.digest === "string" && error.digest.startsWith("NEXT_REDIRECT")) {
