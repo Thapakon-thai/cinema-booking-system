@@ -2,8 +2,6 @@ import { getMovies } from "./actions/booking";
 import { MovieCard } from "@/components/MovieCard";
 import { Ticket } from "lucide-react";
 
-export const revalidate = 0; // Disable cache for demo purposes to see updates immediately
-
 export default async function Home({
   searchParams,
 }: {

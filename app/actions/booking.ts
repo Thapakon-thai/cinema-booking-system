@@ -1,7 +1,7 @@
 "use server";
 
-import { PrismaClient, Prisma} from '@prisma/client'
-import { revalidatePath } from 'next/cache'
+import { PrismaClient } from '@prisma/client'
+import { unstable_cache, revalidateTag } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 const prisma = new PrismaClient({
@@ -17,30 +17,38 @@ const prisma = new PrismaClient({
 // const prisma = globalPrisma.prisma || new PrismaClient();
 // globalPrisma.prisma = prisma;
 
+const getCachedMovies = unstable_cache(
+  async () => {
+    return await prisma.movie.findMany({
+      orderBy: {
+        showTime: 'asc',
+      },
+    })
+  },
+  ['movies'],
+  { tags: ['movies'], revalidate: 60 }
+)
+
 export async function getMovies() {
-  // 1. วัดผลการ Query แบบมี Sorting (ถ้าทำ Index ที่ showTime จะเร็วขึ้นมาก)
-  console.time("⏱️ getMovies_Duration");
-  const movies = await prisma.movie.findMany({
-    take: 20, // <--- ดึงมาแค่ 20 อันพอ
-    orderBy: {
-      showTime: "asc",
-    },
-  });
-  console.timeEnd("⏱️ getMovies_Duration");
-  return movies;
+  return getCachedMovies()
 }
 
-export async function getMovie(id: number) {
-  // 2. วัดผลการดึงข้อมูล Relation (ถ้าทำ Index ที่ Booking.movieId จะเร็วขึ้นมาก)
-  console.time(`⏱️ getMovie_with_Bookings_ID_${id}`);
-  const movie = await prisma.movie.findUnique({
-    where: { id },
-    include: {
-      bookings: true, // ตรงนี้แหละครับที่ระบบต้องไปสแกนหาในตาราง Booking
+const getCachedMovie = (id: number) =>
+  unstable_cache(
+    async () => {
+      return await prisma.movie.findUnique({
+        where: { id },
+        include: {
+          bookings: true,
+        },
+      })
     },
-  });
-  console.timeEnd(`⏱️ getMovie_with_Bookings_ID_${id}`);
-  return movie;
+    [`movie-${id}`],
+    { tags: [`movie-${id}`], revalidate: 30 }
+  )()
+
+export async function getMovie(id: number) {
+  return getCachedMovie(id)
 }
 
 export async function bookSeats(movieId: number, seats: string[]) {
@@ -82,7 +90,7 @@ export async function bookSeats(movieId: number, seats: string[]) {
       return result
     }
     
-    revalidatePath(`/movie/${movieId}`)
+    revalidateTag(`/movie/${movieId}`, { expire: 0 })
     redirect(`/?success=true&seats=${encodeURIComponent(seats.join(', '))}&ticketId=${ticketId!}`)
   } catch (error: any) {
     if (error && typeof error === "object" && "digest" in error && typeof error.digest === "string" && error.digest.startsWith("NEXT_REDIRECT")) {
@@ -95,4 +103,5 @@ export async function bookSeats(movieId: number, seats: string[]) {
     
     return { error: 'An unexpected error occurred' }; 
   }
+
 }
