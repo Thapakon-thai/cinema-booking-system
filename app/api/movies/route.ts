@@ -1,3 +1,4 @@
+// for load test only
 import { PrismaClient } from '@prisma/client'
 import { unstable_cache } from 'next/cache'
 import { NextResponse } from 'next/server'
